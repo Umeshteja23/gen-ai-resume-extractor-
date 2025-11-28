@@ -1,0 +1,144 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pdf_summary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -176
+      ],
+      "id": "2f13f1bd-095a-4eab-b6dc-7ea233cba40d",
+      "name": "Webhook",
+      "webhookId": "3e0e1d01-bb3d-420f-9bb8-87c9aa30e919"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -176
+      ],
+      "id": "18300fab-8287-4a54-ae52-e2c54749a2db",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "You are a professional resume analyzer. Your task is to create a concise, well-structured summary of the resume provided.\n\nAnalyze the resume text and create a summary that includes:\n1. Professional background and current role/title\n2. Key skills and technical expertise\n3. Notable experience and achievements\n4. Education and certifications (if mentioned)\n\nKeep the summary professional, clear, and between 150-250 words. Focus on the most relevant and impressive aspects of the candidate."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        128,
+        -176
+      ],
+      "id": "22902d07-dea3-4be9-9bf2-7fe1a8d7645b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        64
+      ],
+      "id": "3329fae2-9a3a-4e2d-998d-5a539e22e132",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "WzqYdUS21jMmzggO",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        480,
+        -176
+      ],
+      "id": "2d7cf6ed-e8ac-4e90-bc59-a18b8766fa0c",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "704a8de4-e5aa-4291-8201-04a7a0ff2696",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "146e79dc86b534fc974e3e872a2449c73685ab8703405d1e33b5a95fa1f7bc25"
+  },
+  "id": "PXSkuP3OdamzEE8U",
+  "tags": []
+}
